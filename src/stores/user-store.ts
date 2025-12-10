@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { useEffect, useState } from 'react';
 import { DEFAULT_USER_PREFERENCES } from '@/types/user';
 import type {
   UserProfile,
@@ -17,6 +18,10 @@ interface UserState {
   // Authentication status
   isAuthenticated: boolean;
 
+  // Hydration state
+  _hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
+
   // Actions
   setUser: (user: UserProfile | null) => void;
   updateProfile: (updates: Partial<UserProfile>) => void;
@@ -33,12 +38,17 @@ const initialState = {
   isLoading: false,
   error: null,
   isAuthenticated: false,
+  _hasHydrated: false,
 };
 
 export const useUserStore = create<UserState>()(
   persist(
     (set, get) => ({
       ...initialState,
+
+      setHasHydrated: (state) => {
+        set({ _hasHydrated: state });
+      },
 
       setUser: (user) =>
         set({
@@ -110,16 +120,41 @@ export const useUserStore = create<UserState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
 
 /**
  * Helper hook to check if user has completed chronotype assessment
+ * Returns false during SSR/hydration to prevent hydration mismatch
  */
 export function useHasChronotypeAssessment(): boolean {
   const user = useUserStore((state) => state.user);
+  const hasHydrated = useUserStore((state) => state._hasHydrated);
+
+  // During SSR or before hydration, return false to match server render
+  if (!hasHydrated) {
+    return false;
+  }
+
   return user !== null && user.circadianProfile !== null && user.circadianProfile !== undefined;
+}
+
+/**
+ * Hook to wait for store hydration
+ */
+export function useStoreHydration(): boolean {
+  const hasHydrated = useUserStore((state) => state._hasHydrated);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(hasHydrated);
+  }, [hasHydrated]);
+
+  return isHydrated;
 }
 
 /**
