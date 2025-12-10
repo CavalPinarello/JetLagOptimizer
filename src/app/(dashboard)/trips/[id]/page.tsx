@@ -27,7 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useTripStore } from '@/stores/trip-store';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore, useHasChronotypeAssessment } from '@/stores/user-store';
 import { cn } from '@/lib/utils';
 import { formatProtocolDay } from '@/lib/utils';
 import { generateProtocol } from '@/lib/circadian/protocol-generator';
@@ -220,6 +220,7 @@ export default function TripDetailPage() {
   const { trips, activeProtocol, setActiveTrip, setActiveProtocol, markInterventionComplete } =
     useTripStore();
   const { user } = useUserStore();
+  const hasChronotypeAssessment = useHasChronotypeAssessment();
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -248,7 +249,7 @@ export default function TripDetailPage() {
   }
 
   const handleGenerateProtocol = async () => {
-    if (!user?.circadianProfile) {
+    if (!hasChronotypeAssessment || !user?.circadianProfile) {
       router.push('/questionnaire');
       return;
     }
@@ -366,14 +367,14 @@ export default function TripDetailPage() {
             <Zap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">No Protocol Generated</h2>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              {user?.circadianProfile
+              {hasChronotypeAssessment
                 ? 'Generate a personalized adjustment protocol for this trip based on your chronotype.'
                 : 'Complete your chronotype assessment first to get a personalized protocol.'}
             </p>
             <Button onClick={handleGenerateProtocol} disabled={isGenerating}>
               {isGenerating
                 ? 'Generating...'
-                : user?.circadianProfile
+                : hasChronotypeAssessment
                 ? 'Generate Protocol'
                 : 'Complete Assessment'}
             </Button>
