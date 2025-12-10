@@ -38,8 +38,8 @@ export type InterventionPriority =
  */
 export interface LightInterventionDetails {
   type: 'light_exposure' | 'light_avoidance';
-  intensity: 'bright' | 'moderate' | 'dim';
-  source: 'outdoor' | 'lightbox' | 'blue_light_glasses' | 'any';
+  intensity: 'bright' | 'moderate' | 'dim' | 'dark' | 'any';
+  source: 'outdoor' | 'lightbox' | 'blue_light_glasses' | 'sunglasses' | 'eye_mask' | 'cabin_lights' | 'any';
   luxTarget: number;                 // Target light level in lux
   blueBlockersRecommended: boolean;  // For avoidance
   outdoorPreferred: boolean;         // Outdoor sunlight is most effective
@@ -87,9 +87,9 @@ export interface CaffeineInterventionDetails {
  */
 export interface MealInterventionDetails {
   type: 'meal';
-  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'fast';
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'fast' | 'meal' | 'any';
   anchorMeal: boolean;               // Is this a timing anchor for peripheral clocks?
-  composition?: 'light' | 'normal' | 'heavy';
+  composition?: 'light' | 'normal' | 'heavy' | 'balanced' | 'protein-rich';
   fastingPeriod?: {
     start: string;                   // HH:MM
     end: string;                     // HH:MM
