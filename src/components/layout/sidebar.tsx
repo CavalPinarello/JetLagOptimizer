@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/stores/ui-store';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore, useHasChronotypeAssessment } from '@/stores/user-store';
 import { cn } from '@/lib/utils';
 
 const mainNavItems = [
@@ -69,7 +69,7 @@ export function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useUIStore();
   const { user } = useUserStore();
 
-  const hasChronotypeAssessment = user?.circadianProfile !== null;
+  const hasChronotypeAssessment = useHasChronotypeAssessment();
 
   return (
     <aside

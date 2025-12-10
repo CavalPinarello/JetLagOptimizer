@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { DEFAULT_USER_PREFERENCES } from '@/types/user';
 import type {
   UserProfile,
   CircadianProfile,
   UserPreferences,
   ChronotypeCategory,
-  DEFAULT_USER_PREFERENCES,
 } from '@/types/user';
 
 interface UserState {
@@ -59,15 +59,27 @@ export const useUserStore = create<UserState>()(
         })),
 
       updateCircadianProfile: (profile) =>
-        set((state) => ({
-          user: state.user
-            ? {
-                ...state.user,
-                circadianProfile: profile,
-                updatedAt: new Date(),
-              }
-            : null,
-        })),
+        set((state) => {
+          // If no user exists, create a demo user
+          const currentUser = state.user || {
+            id: 'demo-user-' + Date.now(),
+            email: 'demo@jetlagoptimizer.com',
+            name: 'Demo User',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            circadianProfile: null,
+            preferences: DEFAULT_USER_PREFERENCES,
+          };
+
+          return {
+            user: {
+              ...currentUser,
+              circadianProfile: profile,
+              updatedAt: new Date(),
+            },
+            isAuthenticated: true,
+          };
+        }),
 
       updatePreferences: (preferences) =>
         set((state) => ({
@@ -107,7 +119,7 @@ export const useUserStore = create<UserState>()(
  */
 export function useHasChronotypeAssessment(): boolean {
   const user = useUserStore((state) => state.user);
-  return user?.circadianProfile !== null;
+  return user !== null && user.circadianProfile !== null && user.circadianProfile !== undefined;
 }
 
 /**

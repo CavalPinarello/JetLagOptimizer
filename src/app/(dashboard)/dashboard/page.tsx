@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ProtocolStreak, WeeklyOverview } from '@/components/protocol/intervention-tracker';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore, useHasChronotypeAssessment } from '@/stores/user-store';
 import { useTripStore, useTodayProtocolDay, useNextTrip } from '@/stores/trip-store';
 import { cn } from '@/lib/utils';
 import { formatProtocolDay } from '@/lib/utils';
@@ -207,7 +207,7 @@ export default function DashboardPage() {
   const { activeProtocol, markInterventionComplete } = useTripStore();
   const todayDay = useTodayProtocolDay();
 
-  const hasChronotypeAssessment = user?.circadianProfile !== null;
+  const hasChronotypeAssessment = useHasChronotypeAssessment();
 
   // Mock data for demonstration if no real data
   const showMockData = !activeProtocol && hasChronotypeAssessment;

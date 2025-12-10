@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore, useHasChronotypeAssessment } from '@/stores/user-store';
 import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
 
@@ -69,7 +69,7 @@ export function MobileBottomNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, logout } = useUserStore();
 
-  const hasChronotypeAssessment = user?.circadianProfile !== null;
+  const hasChronotypeAssessment = useHasChronotypeAssessment();
 
   return (
     <>
